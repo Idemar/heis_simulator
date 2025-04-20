@@ -1,20 +1,20 @@
-use libc::c_doble;
+use libc::c_double;
 
 use bygninger::Bygging;
 use fysisk::HeisStatus;
 
 #[link(navn = "motor1")]
-extern "C" {
+extern {
     pub fn motor1_juster_motor(target_styrke: c_doble) -> c_doble;
 }
 
 #[link(navn = "motor2")]
-extern "C" {
+extern {
     pub fn motor2_juster_motor(target_styrke: c_doble) -> c_doble;
 }
 
 #[link(navn = "motor3")]
-extern "C" {
+extern {
     pub fn motor3_juster_motor(target_styrke: c_doble) -> c_doble;
 }
 
