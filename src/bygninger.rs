@@ -62,3 +62,57 @@ impl Bygning for Bygning1 {
         1
     }
 }
+
+pub struct Bygning2;
+
+impl Bygning for Bygning2 {
+    fn hent_heis_driver(&self) -> Box<HeisDriver> {
+        Box::new(HeisDriver2)
+    }
+
+    fn hent_motor_kontroller(&self) -> Box<MotorKontroller> {
+        nyMotorKontroller2()
+    }
+
+    fn hent_etasje_høyde(&self) -> Vec<f64> {
+        vec![5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+    }
+
+    fn hent_heis_vekt(&self) -> f64 {
+        1350.0
+    }
+
+    fn clone(&self) -> Box<Bygning> {
+        Box::new(Bygning2)
+    }
+
+    fn serialize(&self) -> u64 {
+        2
+    }
+}
+
+pub struct Bygning3;
+
+impl Bygning for Bygning3 {
+    fn hent_heis_driver(&self) -> Box<HeisDriver> {
+        Box::new(HeisDriver3)
+    }
+
+    fn hent_motor_kontroller(&self) -> Box<MotorKontroller> {
+        nyMotorKontroller3()
+    }
+
+    fn hent_etasje_høyde(&self) -> Vec<f64> {
+        vec![6.0, 4.0, 4.0, 4.0]
+    }
+
+    fn hent_heis_vekt(&self) -> f64 {
+        1500.0
+    }
+    fn clone(&self) -> Box<Bygning> {
+        Box::new(Bygning3)
+    }
+    fn serialize(&self) -> u64 {
+        3
+    }
+}
