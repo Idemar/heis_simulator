@@ -2,7 +2,7 @@ use bygninger::{Bygning, hentHeisEtasje};
 use fysikk::{HeisStatus};
 use std::fs::File;
 use std::io::{self, Read, Write};
-ues std::io::prelude::*;
+use std::io::prelude::*;
 use termion;
 use termion::{clear, cursor, style};
 use termion::raw;
@@ -22,7 +22,7 @@ struct enkelDataRegistrerer<W: Write> {
     termbredde: u64,
     termhøyde: u64,
     stdout: raw::RawTerminal<W>,
-    logg: File,
+    log: File,
     registrer_lokasjon: Vec<f64>,
     registrer_hastighet: Vec<f64>,
     registrer_akselerasjon: Vec<f64>,
@@ -36,7 +36,7 @@ pub fn nyEnkelDataRegistrerer(esp: Box<Bygning>) -> Box<DataRegistreringer> {
         termbredde: termsize.map(|(w, _)| w -2).expect("termbredde") as u64,
         termhøyde: termsize.map(|(h, _)| h -2).expect("termhøyde") as u64,
         stdout: io::stdout().into_raw_mode().unwrap(),
-        logg: File::create("simulator.log").expect("logg fil"),
+        log: File::create("simulator.log").expect("logg fil"),
         registrer_lokasjon: Vec::new(),
         registrer_hastighet: Vec::new(),
         registrer_akselerasjon: Vec::new(),
@@ -44,3 +44,14 @@ pub fn nyEnkelDataRegistrerer(esp: Box<Bygning>) -> Box<DataRegistreringer> {
     })
 }
 
+impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
+    fn init(&mut self, esp: Box<Bygning>, est: HeisStatus) {
+        self.esp = esp.clone();
+        self.log.write_all(serde_json::to_string(&esp.serialize()).unwrap().as_bytes()).expect("skrive til logg");
+        self.log.write_all(b"\n").expect("skrive til logg");
+    }
+
+    fn registrere(&mut self, est: HeisStatus, dst: u64) {
+        
+    }
+}
