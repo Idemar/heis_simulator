@@ -7,7 +7,7 @@ use std::{Thread, time};
 use tur_planlegger::{ForespørselKø};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct HeisStatus {
+pub struct HeisStat {
     pub timestamp: f64,
     pub lokasjon: f64,
     pub hastighet: f64,
@@ -19,7 +19,7 @@ pub const MAX_RYKK: f64 = 20.0;
 pub const MAX_AKSELERASJON: f64 = 2.0;
 pub const MAX_HASTIGHET: f64 = 5.0;
 
-pub simulere_heis(hby: Box<Bygning>, hst: HeisStatus, etasje_forespørsel: &mut Box<ForespørselKø>, bk: &mut Box<BevegelseKontroller>, dr: &mut Box<DataRegistrering>) {
+pub simulere_heis(hby: Box<Bygning>, hst: HeisStat, etasje_forespørsel: &mut Box<ForespørselKø>, bk: &mut Box<BevegelseKontroller>, dr: &mut Box<DataRegistrering>) {
     
     // uforanderlig input blir foranderlig lokal tilstand
     let mut esp = esp.clone();
