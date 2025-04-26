@@ -39,7 +39,7 @@ fn main() {
         let dl = dst_timing.len();
         if dst_timing.len() == 0 || dst_timing[dl - 1].dst != dst {
             dst_timing.push(Tur {
-                dst: dst,
+                dst,
                 opp: 0.0,
                 ned: 0.0,
             });
@@ -72,4 +72,48 @@ fn main() {
 
         forrige_est = Some(est)
     }
+
+    // Heisen skal ikke rygge
+    let mut total_tid = 0.0;
+    let mut total_direkte = 0.0;
+    for tur in dst_timing.clone() {
+        total_tid += (tur.opp + tur.ned);
+        if tur.opp > tur.ned {
+            total_direkte += tur.opp;
+        } else {
+            total_direkte += tur.ned
+        }
+    }
+
+    if (total_direkte / total_tid) < 0.9 {
+        panic!("Heiskrasj er for vanlig: {}", total_direkte / total_tid)
+    }
+
+    // turene bør fullføres innenfor 20 % av den teoretiske grensen
+    let MAX_RYKK = 0.2;
+    let MAX_AKSELERASJON = 2.0;
+    let MAX_HASTIGHET = 5.0;
+
+    let mut tur_start_lokasjon = start_lokasjon;
+    let mut teoretisk_tid = 0.0;
+    let etasje_høyde = esp.hentEtasjeHøyde();
+    for tur in dst_timing.clone() {
+        let neste_etasje = hentKumultivEtasjeHøyde(etasje_høyde.clone(), tur.dst);
+        let d = (tur_start_lokasjon - neste_etasje).abs();
+        teoretisk_tid += (2.0 * (MAX_AKSELERASJON / MAX_RYKK)
+            + 2.0 * (MAX_RYKK / MAX_AKSELERASJON)
+            + d / MAX_HASTIGHET);
+
+        tur_start_lokasjon = neste_etasje
+    }
+
+    if total_tid > (teoretisk_tid * 1.2) {
+        panic!(
+            "heisen går for saktere {} {}",
+            total_tid,
+            teoretisk_tid * 1.2
+        )
+    }
+
+    println!("Alle simuleringskontroller består");
 }
