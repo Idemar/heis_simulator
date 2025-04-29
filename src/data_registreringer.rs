@@ -171,4 +171,3 @@ fn variabel_sammendrag_print<W: Write>(
     writeln!(stdout, "Standardavvik av {:14}{:.6}", vnavn, dev);
     writeln!(stdout, "");
 }
-
