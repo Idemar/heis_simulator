@@ -12,7 +12,7 @@ use std::io::{self, BufRead, BufReader, Read, Write};
 use std::time::Instat;
 
 use heis_simulator::bygninger;
-use heis_simulator::bygninger::{Bygning, hentKumultivEtasjeHøyde};
+use heis_simulator::bygninger::{Bygning, hentKumultivEtasjeHoyde};
 use heis_simulator::fysikk::HeisStat;
 
 #[derive(Clone)]
@@ -96,9 +96,9 @@ fn main() {
 
     let mut tur_start_lokasjon = start_lokasjon;
     let mut teoretisk_tid = 0.0;
-    let etasje_høyde = esp.hentEtasjeHøyde();
+    let etasje_hoyde = esp.hentEtasjeHoyde();
     for tur in dst_timing.clone() {
-        let neste_etasje = hentKumultivEtasjeHøyde(etasje_høyde.clone(), tur.dst);
+        let neste_etasje = hentKumultivEtasjeHoyde(etasje_hoyde.clone(), tur.dst);
         let d = (tur_start_lokasjon - neste_etasje).abs();
         teoretisk_tid += (2.0 * (MAX_AKSELERASJON / MAX_RYKK)
             + 2.0 * (MAX_RYKK / MAX_AKSELERASJON)

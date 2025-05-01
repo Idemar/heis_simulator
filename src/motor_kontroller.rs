@@ -1,7 +1,7 @@
 use libc::c_double;
 
-use bygninger::Bygning;
-use fysikk::HeisStatus;
+use crate::bygninger::Bygning;
+use crate::fysikk::HeisStat;
 
 #[link(navn = "motor1")]
 unsafe extern "C" {
@@ -80,7 +80,7 @@ pub struct MotorKontroller1 {
     motor: Motor1,
 }
 
-pub fn nyMotorKontroller1() -> Box<MotorKontroller> {
+pub fn nyMotorKontroller1() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller1 { motor: Motor1 })
 }
 
@@ -98,7 +98,7 @@ pub struct MotorKontroller2 {
     motor: Motor2,
 }
 
-pub fn MotorKontroller2() -> Box<MotorKontroller> {
+pub fn nyMotorKontroller2() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller2 { motor: Motor2 })
 }
 
@@ -116,7 +116,7 @@ pub struct MotorKontroller3 {
     motor: Motor3,
 }
 
-pub fn nyMotorKontroller3() -> Box<MotorKontroller> {
+pub fn nyMotorKontroller3() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller3 { motor: Motor3 })
 }
 

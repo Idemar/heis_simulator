@@ -1,32 +1,32 @@
 use libc::c_int;
 
-#[link(navn: "heis1")]
-extern {
-    pub fn heis1_etasje_forespørsel() -> c_int;
+#[link(navn = "heis1")]
+unsafe extern {
+    pub fn heis1_etasje_foresporsel() -> c_int;
 }
 
-#[link(navn: "heis2")]
-extern {
-    pub fn heis2_etasje_forespørsel() -> c_int;
+#[link(navn = "heis2")]
+unsafe extern {
+    pub fn heis2_etasje_foresporsel() -> c_int;
 }
 
-#[link(navn: "heis3")]
-extern {
-    pub fn heis3_etasje_forespørsel() -> c_int;
+#[link(navn = "heis3")]
+unsafe extern {
+    pub fn heis3_etasje_foresporsel() -> c_int;
 }
 
 pub trait HeisDriver {
-    fn etasje_forespørsel(&self) -> Option<u64>;
+    fn etasje_foresporsel(&self) -> Option<u64>;
 }
 
 pub struct HeisDriver1;
 
 impl HeisDriver for HeisDriver1 {
-    fn etasje_forespørsel(&self) -> Option<u64> {
+    fn etasje_foresporsel(&self) -> Option<u64> {
         unsafe {
-            let forespørsel = heis1_etasje_forespørsel();
-            if forespørsel > 0 {
-                Some(forespørsel as u64)
+            let foresporsel = heis1_etasje_foresporsel();
+            if foresporsel > 0 {
+                Some(foresporsel as u64)
             } else {
                 None
             }
@@ -37,11 +37,11 @@ impl HeisDriver for HeisDriver1 {
 pub struct HeisDriver2;
 
 impl HeisDriver for HeisDriver2 {
-    fn etasje_forespørsel(&self) -> Option<u64> {
+    fn etasje_foresporsel(&self) -> Option<u64> {
         unsafe {
-            let forespørsel = heis2_etasje_forespørsel();
-            if forespørsel > 0 {
-                Some(forespørsel as u64)
+            let foresporsel = heis2_etasje_foresporsel();
+            if foresporsel > 0 {
+                Some(foresporsel as u64)
             } else {
                 None
             }
@@ -52,11 +52,11 @@ impl HeisDriver for HeisDriver2 {
 pub struct HeisDriver3;
 
 impl HeisDriver for HeisDriver3 {
-    fn etasje_forespørsel(&self) -> Option<u64> {
+    fn etasje_foresporsel(&self) -> Option<u64> {
         unsafe {
-            let forespørsel = heis3_etasje_forespørsel();
-            if forespørsel > 0 {
-                Some(forespørsel as u64)
+            let foresporsel = heis3_etasje_foresporsel();
+            if foresporsel > 0 {
+                Some(foresporsel as u64)
             } else {
                 None
             }

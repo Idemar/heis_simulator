@@ -1,10 +1,10 @@
-use heis_driver::{HeisDriver, HeisDriver1, HeisDriver2, HeisDriver3};
-use motor_driver::{Motor_kontroller, nyMotorKontroller1, nyMotorKontroller2, nyMotorKontroller3};
+use crate::heis_driver::{HeisDriver, HeisDriver1, HeisDriver2, HeisDriver3};
+use crate::motor_kontroller::{MotorKontroller, nyMotorKontroller1, nyMotorKontroller2, nyMotorKontroller3};
 
 pub trait Bygning {
-    fn hent_heis_driver(&self) -> Box<HeisDriver>;
-    fn hent_motor_kontroller(&self) -> Box<MotorKontroller>;
-    fn hent_etasje_høyde(&self) -> Vec<f64>;
+    fn hent_heis_driver(&self) -> Box<dyn HeisDriver>;
+    fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller>;
+    fn hent_etasje_hoyde(&self) -> Vec<f64>;
     fn hent_heis_vekt(&self) -> f64;
     fn clone(&self) -> Box<Bygning>;
     fn serialize(&self) -> u64;
@@ -20,33 +20,33 @@ pub fn deserialize(n: f64) -> Box<Bygning> {
     }
 }
 
-pub fn hentHeisEtasje(etasjeHøyde: Vec<f64>, høyde: u64) -> f64 {
+pub fn hentHeisEtasje(etasjeHoyde: Vec<f64>, hoyde: u64) -> f64 {
     let mut c = 0.0;
-    for (ei, eh) in etasjeHøyde.iter().enumerate() {
+    for (ei, eh) in etasjeHoyde.iter().enumerate() {
         c += eh;
-        if høyde <= c {
-            return (ei as u64)
+        if hoyde <= c {
+            return ei as u64
         }
     }
-    (etasjeHøyde.len() -1) as u64
+    (etasjeHoyde.len() -1) as u64
 }
 
-pub fn hentKumulativEtasjeHøyde(høyde: Vec<f64>, etasje: u64) -> f64 {
-    høyde.iter().take(etasje as usize).sum()
+pub fn hentKumulativEtasjeHoyde(hoyde: Vec<f64>, etasje: u64) -> f64 {
+    hoyde.iter().take(etasje as usize).sum()
 }
 
 pub struct Bygning1;
 
 impl Bygning for Bygning1 {
-    fn hent_heis_driver(&self) -> Box<HeisDriver> {
+    fn hent_heis_driver(&self) -> Box<dyn HeisDriver> {
         Box::new(HeisDriver1)
     }
 
-    fn hent_motor_kontroller(&self) -> Box<MotorKontroller> {
+    fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
         nyMotorKontroller1()
     }
 
-    fn hent_etasje_høyde(&self) -> Vec<f64> {
+    fn hent_etasje_hoyde(&self) -> Vec<f64> {
         vec![8.0, 4.0, 4.0, 4.0, 4.0]
     }
 
@@ -66,15 +66,15 @@ impl Bygning for Bygning1 {
 pub struct Bygning2;
 
 impl Bygning for Bygning2 {
-    fn hent_heis_driver(&self) -> Box<HeisDriver> {
+    fn hent_heis_driver(&self) -> Box<dyn HeisDriver> {
         Box::new(HeisDriver2)
     }
 
-    fn hent_motor_kontroller(&self) -> Box<MotorKontroller> {
+    fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
         nyMotorKontroller2()
     }
 
-    fn hent_etasje_høyde(&self) -> Vec<f64> {
+    fn hent_etasje_hoyde(&self) -> Vec<f64> {
         vec![5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
     }
 
@@ -94,15 +94,15 @@ impl Bygning for Bygning2 {
 pub struct Bygning3;
 
 impl Bygning for Bygning3 {
-    fn hent_heis_driver(&self) -> Box<HeisDriver> {
+    fn hent_heis_driver(&self) -> Box<dyn HeisDriver> {
         Box::new(HeisDriver3)
     }
 
-    fn hent_motor_kontroller(&self) -> Box<MotorKontroller> {
+    fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
         nyMotorKontroller3()
     }
 
-    fn hent_etasje_høyde(&self) -> Vec<f64> {
+    fn hent_etasje_hoyde(&self) -> Vec<f64> {
         vec![6.0, 4.0, 4.0, 4.0]
     }
 

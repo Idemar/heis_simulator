@@ -2,9 +2,9 @@ extern crate floating_duration;
 extern crate heis_simulator;
 
 use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, jevnBevegelseKontroller};
-use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hentKumulativEtasjeHøyde};
+use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hentKumulativEtasjeHoyde};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
-use heis_simulator::turplanlegging::{EtasjeForespørseler, ForespørselKø};
+use heis_simulator::turplanlegging::{EtasjeForesporseler, ForesporselKo};
 
 use floating_duration::{TimeAsFloat, TimeFormat};
 use std::cmp;
@@ -29,8 +29,8 @@ pub fn kjør_operatør() {
 
     // Lagre inndata bygningsbeskrivelse og etasjeforespørsler
     let mut esp: Box<Bygning> = Box::new(Bygning1);
-    let mut etasjeforespørsler: Box<ForespørselKø> = Box::new(EtasjeForespørseler {
-        forespørseler: VecDeque::new(),
+    let mut etasjeforesporsler: Box<ForesporselKo> = Box::new(EtasjeForesporseler {
+        foresporseler: VecDeque::new(),
     });
 
     // Analyser inndata og lagre som bygningsbeskrivelse og etasjeforespørsler
@@ -54,7 +54,7 @@ pub fn kjør_operatør() {
                         panic!("Ukjent bygingskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
@@ -79,7 +79,7 @@ pub fn kjør_operatør() {
                         panic!("Ukjent bygingskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
@@ -103,7 +103,7 @@ pub fn kjør_operatør() {
                         panic!("Ukjent bygingskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
@@ -120,7 +120,7 @@ pub fn kjør_operatør() {
     // Loop mens det er gjenværende etasjeforespørsler
     let original_ts = Instant::now();
     thread::sleep(time::Duration::from_millis(1));
-    let mut neste_etasje = etasjeforespørsler.pop_request();
+    let mut neste_etasje = etasjeforesporsler.pop_request();
 
     while true {
         if let Some(dst) = neste_etasje {
@@ -139,11 +139,11 @@ pub fn kjør_operatør() {
             };
 
             // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-            if (est.lokasjon - hentKumulativEtasjeHøyde(esp.hent_etasje_vekt(), dst)).abs() < 0.01
+            if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_vekt(), dst)).abs() < 0.01
                 && est.hastighet.abs() < 0.01
             {
                 est.hastighet = 0.0;
-                neste_etasje = etasjeforespørsler.pop_request();
+                neste_etasje = etasjeforesporsler.pop_request();
             }
 
             // Juster motorkontrollen for å behandle forespørsel om neste etasje
@@ -159,8 +159,8 @@ pub fn kjør_operatør() {
         }
 
         // sjekk for dynamiske etasjeforespørsler
-        if let Some(dst) = esp.hent_heis_driver().poll_etasje_forespørsle() {
-            etasjeforespørsler.legg_til_forespørsel(dst);
+        if let Some(dst) = esp.hent_heis_driver().poll_etasje_foresporsle() {
+            etasjeforesporsler.legg_til_foresporsel(dst);
         }
     }
 }

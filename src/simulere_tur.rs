@@ -5,7 +5,7 @@ use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, jevnBevegelseKon
 use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3};
 use heis_simulator::data_registreringer::{DataRegistreringer, enkelDataRegistrerer};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
-use heis_simulator::tur_planlegging::{EtasjeForespørsel, ForespørselKø};
+use heis_simulator::tur_planlegging::{EtasjeForesporsel, ForesporselKo};
 
 use std::cmp;
 use std::collections::VecDeque;
@@ -28,8 +28,8 @@ pub fn kjør_simulering() {
 
     // Lagre inndata bygningsbeskrivelse og etasjeforespørsler
     let mut esp: Box<Bygning> = Box::new(Bygning1);
-    let mut etasjeforespørsler: Box<ForespørselKø> = Box::new(EtasjeForespørsel {
-        forespørsel: VecDeque::new(),
+    let mut etasjeforesporsler: Box<ForesporselKo> = Box::new(EtasjeForesporsel {
+        foresporsel: VecDeque::new(),
     });
 
     // Analyser inndata og lagre som bygningsbeskrivelse og etasjeforespørsler
@@ -53,7 +53,7 @@ pub fn kjør_simulering() {
                         panic!("Ukjent bygningskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
@@ -78,7 +78,7 @@ pub fn kjør_simulering() {
                         panic!("Ukjent bygningskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
@@ -102,7 +102,7 @@ pub fn kjør_simulering() {
                         panic!("Ukjent bygningskode: {}", bygning);
                     }
                 } else {
-                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>(), unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>(), unwrap());
                 }
             }
         }
@@ -114,7 +114,7 @@ pub fn kjør_simulering() {
         esp: esp.clone(),
     });
 
-    simulere_heis(esp, est, &mut etasjeforespørsler, &mut mc, &mut dr);
+    simulere_heis(esp, est, &mut etasjeforesporsler, &mut mc, &mut dr);
     dr.summary();
 }
 

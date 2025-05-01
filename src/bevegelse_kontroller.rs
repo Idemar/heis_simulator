@@ -1,17 +1,17 @@
-use bygninger::{Bygning, hentKumulativEtasjeHøyde};
-use fysikk::{HeisStat, MAX_AKSELERASJON, MAX_HASTIGHET, MAX_RYKK};
+use crate::bygninger::{Bygning, hentKumulativEtasjeHoyde};
+use crate::fysikk::{HeisStat, MAX_AKSELERASJON, MAX_HASTIGHET, MAX_RYKK};
 
 pub trait BevegelseKontroller {
     fn init(&mut self, esp: Box<Bygning>, est: HeisStat);
     fn juster(&mut self, est: &HeisStat, dst: u64) -> f64;
 }
 
-pub struct jevnBevegelseKontroller {
-    pub esp: Box<Bygning>,
+pub struct JevnBevegelseKontroller {
+    pub esp: Box<dyn Bygning>,
     pub timestamp: f64,
 }
 
-impl BevegelseKontroller for jevnBevegelseKontroller {
+impl BevegelseKontroller for JevnBevegelseKontroller {
     fn init(&mut self, esp: Box<Bygning>, est: HeisStat) {
         self.esp = esp;
         self.timestamp = est.timestamp;
@@ -38,14 +38,14 @@ impl BevegelseKontroller for jevnBevegelseKontroller {
 
         let d = est.hastighet.abs() * brems_t;
 
-        let dst_høyde = hentKumulativEtasjeHøyde(self.esp.hent_etasje_høyde(), dst);
+        let dst_hoyde = hentKumulativEtasjeHoyde(self.esp.hent_etasje_hoyde(), dst);
 
         // l = avstand til neste etasje
-        let l = (est.lokasjon - dst_høyde).abs();
+        let l = (est.lokasjon - dst_hoyde).abs();
 
-        let mål_akselerasjon = {
+        let mal_akselerasjon = {
             // skal vi opp?
-            let går_opp = est.lokasjon < dst_høyde;
+            let gar_opp = est.lokasjon < dst_hoyde;
 
             // tid som har gått siden forrige trekk
             let dt = est.timestamp - self.timestamp;
@@ -71,15 +71,15 @@ impl BevegelseKontroller for jevnBevegelseKontroller {
                 }
 
             // Hvis den er innenfor et komfortabelt retardasjonsområde og beveger seg i riktig retning, deselerer
-            } else if l < d && (est.hastighet > 0.0) == går_opp {
-                if går_opp {
+            } else if l < d && (est.hastighet > 0.0) == gar_opp {
+                if gar_opp {
                     est.akselerasjon - (dt * MAX_RYKK)
                 } else {
                     est.akselerasjon + (dt * MAX_RYKK)
                 }
             // ellers hvis ikke ved topphastighet, akselerer jevnt
             } else {
-                if går_opp {
+                if gar_opp {
                     est.akselerasjon + (dt * MAX_RYKK)
                 } else {
                     est.akselerasjon - (dt * MAX_RYKK)
@@ -87,14 +87,14 @@ impl BevegelseKontroller for jevnBevegelseKontroller {
             }
         };
 
-        let tyngdekraftsjustert_akselerasjon = mål_akselerasjon + 9.8;
-        let mål_styrke = tyngdekraftsjustert_akselerasjon * self.esp.hent_heis_vekt();
-        if !mål_styrke.is_finite() {
+        let tyngdekraftsjustert_akselerasjon = mal_akselerasjon + 9.8;
+        let mal_styrke = tyngdekraftsjustert_akselerasjon * self.esp.hent_heis_vekt();
+        if !mal_styrke.is_finite() {
             //dele på null osv.
             //kan skje hvis tidsdeltaet renner ut
             0.0
         } else {
-            mål_styrke
+            mal_styrke
         }
     }
 }

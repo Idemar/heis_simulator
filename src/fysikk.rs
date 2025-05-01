@@ -1,10 +1,10 @@
-use bevegelse_kontroller::{BevegelseKontroller};
-use bygninger::{Bygning, hentKumulativEtasjeHøyde};
-use data_registrering::{DataRegistrering};
+use crate::bevegelse_kontroller::{BevegelseKontroller};
+use crate::bygninger::{Bygning, hentKumulativEtasjeHoyde};
+use crate::data_registreringer::{DataRegistreringer};
 use floating_duration::{TimeAsFloat, TimeFormat};
 use std::time::Instant;
-use std::{Thread, time};
-use tur_planlegger::{ForespørselKø};
+use std::{thread, time};
+use crate::turplanlegging::{ForesporselsKo};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct HeisStat {
@@ -19,20 +19,20 @@ pub const MAX_RYKK: f64 = 20.0;
 pub const MAX_AKSELERASJON: f64 = 2.0;
 pub const MAX_HASTIGHET: f64 = 5.0;
 
-pub simulere_heis(hby: Box<Bygning>, hst: HeisStat, etasje_forespørsel: &mut Box<ForespørselKø>, bk: &mut Box<BevegelseKontroller>, dr: &mut Box<DataRegistrering>) {
+pub fn simulere_heis(esp: Box<Bygning>, est: HeisStat, etasje_foresporsel: &mut Box<ForesporselsKo>, mc: &mut Box<BevegelseKontroller>, dr: &mut Box<DataRegistreringer>) {
     
     // uforanderlig input blir foranderlig lokal tilstand
     let mut esp = esp.clone();
     let mut est = est.clone();
 
     //initialiser MotorKontroller og DataKontroller
-    mc.init(esp.clone(, est.clone()));
+    mc.init(esp.clone(), est.clone());
     dr.init(esp.clone(), est.clone());
 
     // Loop mens det er gjenværende etasjeforespørsler
     let original_ts = Instant::now();
     thread::sleep(time::Duration::from_millis(1));
-    let mut neste_etasje = etasje_forespørsel.pop_request();
+    let mut neste_etasje = etasje_foresporsel.pop_request();
 
     while let Some(dst) = neste_etasje {
 
@@ -51,9 +51,9 @@ pub simulere_heis(hby: Box<Bygning>, hst: HeisStat, etasje_forespørsel: &mut Bo
         };
 
         // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-        if (est.lokasjon - hentKumulativEtasjeHøyde(esp.hent_etasje_høyde(), dst)).abs() < 0.01 && est.hastighet.abs() < 0.01 {
+        if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01 && est.hastighet.abs() < 0.01 {
             est.hastighet = 0.0;
-            neste_etasje = etasje_forespørsel.pop_request();
+            neste_etasje = etasje_foresporsel.pop_request();
         }
 
         // Skriv ut statistikk i sanntid
