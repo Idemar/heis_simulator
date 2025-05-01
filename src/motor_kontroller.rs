@@ -1,21 +1,21 @@
 use libc::c_double;
 
-use bygninger::Bygging;
+use bygninger::Bygning;
 use fysikk::HeisStatus;
 
 #[link(navn = "motor1")]
-extern "C" {
-    pub fn motor1_juster_motor(target_styrke: c_double) -> c_doble;
+unsafe extern "C" {
+    pub fn motor1_juster_motor(target_styrke: c_double) -> c_double;
 }
 
 #[link(navn = "motor2")]
-extern "C" {
-    pub fn motor2_juster_motor(target_styrke: c_double) -> c_doble;
+unsafe extern "C" {
+    pub fn motor2_juster_motor(target_styrke: c_double) -> c_double;
 }
 
 #[link(navn = "motor3")]
-extern "C" {
-    pub fn motor3_juster_motor(target_styrke: c_double) -> c_doble;
+unsafe extern "C" {
+    pub fn motor3_juster_motor(target_styrke: c_double) -> c_double;
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
