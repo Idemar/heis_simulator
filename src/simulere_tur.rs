@@ -33,4 +33,91 @@ pub fn kjør_simulering() {
     });
 
     // Analyser inndata og lagre som bygningsbeskrivelse og etasjeforespørsler
+    match env::args().nth(1) {
+        Some(ref fp) if *fp == "-".to_string() => {
+            let mut buffer = String::new();
+            io::stdin()
+                .read_to_string(&mut buffer)
+                .except("read_to_string feilet");
+
+            for (li, l) in buffer.lines().enumerate() {
+                if li == 0 {
+                    let bygning = l.parse::<u64>().unwrap();
+                    if bygning = 0 {
+                        esp = Box::new(Bygning1);
+                    } else if bygning == 1 {
+                        esp = Box::new(Bygning2);
+                    } else if bygning == 2 {
+                        esp = Box::new(Bygning3);
+                    } else {
+                        panic!("Ukjent bygningskode: {}", bygning);
+                    }
+                } else {
+                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                }
+            }
+        }
+        None => {
+            let fp = "test.txt";
+            let mut buffer = String::new();
+            File::open(fp)
+                .except("File::open feilet")
+                .read_to_string(&mut buffer)
+                .except("read_to_string feilet");
+
+            for (li, l) in buffer.lines().enumerate() {
+                if li == 0 {
+                    let bygning = l.parse::<u64>().unwrap();
+                    if bygning = 0 {
+                        esp = Box::new(Bygning1);
+                    } else if bygning == 1 {
+                        esp = Box::new(Bygning2);
+                    } else if bygning == 2 {
+                        esp = Box::new(Bygning3);
+                    } else {
+                        panic!("Ukjent bygningskode: {}", bygning);
+                    }
+                } else {
+                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>().unwrap());
+                }
+            }
+        }
+        Some(fp) => {
+            let mut buffer = String::new();
+            File::open(fp)
+                .except("File::open feilet")
+                .read_to_string(&mut buffer)
+                .except("read_to_string feilet");
+
+            for (li, l) in buffer.lines().enumerate() {
+                if li == 0 {
+                    let bygning = l.parse::<u64>().unwrap();
+                    if bygning == 0 {
+                        esp = Box::new(Bygning1);
+                    } else if bygning == 1 {
+                        esp = Box::new(Bygning2);
+                    } else if bygning == 2 {
+                        esp = Box::new(Bygning3);
+                    } else {
+                        panic!("Ukjent bygningskode: {}", bygning);
+                    }
+                } else {
+                    etasjeforespørsler.legg_til_forespørsel(l.parse::<u64>(), unwrap());
+                }
+            }
+        }
+    }
+
+    let mut dr: Box<DataRegistreringer> = nyEnkelDataRegistrer(esp.clone());
+    let mut mc: Box<BevegelseKontroller> = Box::new(jevnBevegelseKontroller {
+        timestamp: 0.0,
+        esp: esp.clone(),
+    });
+
+    simulere_heis(esp, est, &mut etasjeforespørsler, &mut mc, &mut dr);
+    dr.summary();
+}
+
+fn main() {
+    kjør_simulering()
 }
