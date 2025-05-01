@@ -1,21 +1,21 @@
 use libc::c_double;
 
 use bygninger::Bygging;
-use fysisk::HeisStatus;
+use fysikk::HeisStatus;
 
 #[link(navn = "motor1")]
-extern {
-    pub fn motor1_juster_motor(target_styrke: c_doble) -> c_doble;
+extern "C" {
+    pub fn motor1_juster_motor(target_styrke: c_double) -> c_doble;
 }
 
 #[link(navn = "motor2")]
-extern {
-    pub fn motor2_juster_motor(target_styrke: c_doble) -> c_doble;
+extern "C" {
+    pub fn motor2_juster_motor(target_styrke: c_double) -> c_doble;
 }
 
 #[link(navn = "motor3")]
-extern {
-    pub fn motor3_juster_motor(target_styrke: c_doble) -> c_doble;
+extern "C" {
+    pub fn motor3_juster_motor(target_styrke: c_double) -> c_doble;
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
@@ -87,7 +87,7 @@ pub fn nyMotorKontroller1() -> Box<MotorKontroller> {
 impl MotorKontroller for MotorKontroller1 {
     fn juster_motor(&self, f: f64) {
         self.motor
-            .juster_motor(MotorInput::Motor1 { target_styrke: f64 })
+            .juster_motor(MotorInput::Motor1 { target_styrke: f })
     }
     fn max_styrke(&self) -> f64 {
         50000.0
@@ -105,7 +105,7 @@ pub fn MotorKontroller2() -> Box<MotorKontroller> {
 impl MotorKontroller for MotorKontroller2 {
     fn juster_motor(&self, f: f64) {
         self.motor
-            .juster_motor(MotorInput::Motor2 { target_styrke: f64 })
+            .juster_motor(MotorInput::Motor2 { target_styrke: f })
     }
     fn max_styrke(&self) -> f64 {
         100000.0
@@ -123,7 +123,7 @@ pub fn nyMotorKontroller3() -> Box<MotorKontroller> {
 impl MotorKontroller for MotorKontroller3 {
     fn juster_motor(&self, f: f64) {
         self.motor
-            .juster_motor(MotorInput::Motor3 { target_styrke: f64 })
+            .juster_motor(MotorInput::Motor3 { target_styrke: f })
     }
     fn max_styrke(&self) -> f64 {
         90000.0

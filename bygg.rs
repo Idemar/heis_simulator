@@ -3,11 +3,11 @@ use std::path::Path;
 use std::process::Command;
 
 fn main() {
-    let out_dir = env::var("OUT_DIR").unwarp();
+    let out_dir = env::var("OUT_DIR").unwrap();
 
     Command::new("gcc")
         .args(&["src/motor1.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/motor1.o", out_dir))
+        .arg(&format!("{}/motor1.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
@@ -17,7 +17,7 @@ fn main() {
         .unwrap();
     Command::new("gcc")
         .args(&["src/motor2.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/motor2.o", out_dir))
+        .arg(&format!("{}/motor2.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
@@ -27,7 +27,7 @@ fn main() {
         .unwrap();
     Command::new("gcc")
         .args(&["src/motor3.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/motor3.o", out_dir))
+        .arg(&format!("{}/motor3.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
@@ -38,7 +38,7 @@ fn main() {
 
     Command::new("gcc")
         .args(&["src/heis1.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/heis1.o", out_dir))
+        .arg(&format!("{}/heis1.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
@@ -49,7 +49,7 @@ fn main() {
 
     Command::new("gcc")
         .args(&["src/heis2.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/heis2.o", out_dir))
+        .arg(&format!("{}/heis2.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
@@ -60,7 +60,7 @@ fn main() {
 
     Command::new("gcc")
         .args(&["src/heis3.c", "-c", "-fPIC", "-o"])
-        .args(&format!("{}/heis3.o", out_dir))
+        .arg(&format!("{}/heis3.o", out_dir))
         .status()
         .unwrap();
     Command::new("ar")
