@@ -1,4 +1,4 @@
-use crate::bygninger::{Bygning, hentHeisEtasje};
+use crate::bygninger::{Bygning, hent_heis_etasje};
 use crate::fysikk::HeisStat;
 use serde_json;
 use std::fs::File;
@@ -67,7 +67,7 @@ impl<W: Write + std::os::fd::AsFd> DataRegistreringer for EnkelDataRegistrerer<W
 
         // Skriv ut statistikk i sanntid
         print!("{}{}{}", clear::All, cursor::Goto(1, 1), cursor::Hide);
-        let heis_etasje = hentHeisEtasje(self.esp.hent_etasje_hoyde(), est.lokasjon);
+        let heis_etasje = hent_heis_etasje(self.esp.hent_etasje_hoyde(), est.lokasjon);
         let etasje_teller = self.esp.hent_etasje_hoyde().len() as u64;
         let mut terminal_buffer = vec![' ' as u8; (self.termbredde * self.termhoyde) as usize];
 
@@ -101,8 +101,9 @@ impl<W: Write + std::os::fd::AsFd> DataRegistreringer for EnkelDataRegistrerer<W
         write!(
             self.stdout,
             "{}",
-            String::from_utf8(terminal_buffer).ok().unwrap()
-        );
+            String::from_utf8(terminal_buffer).unwrap()
+        )
+        .unwrap();
         self.stdout.flush().unwrap();
     }
 
@@ -140,7 +141,11 @@ impl<W: Write + std::os::fd::AsFd> DataRegistreringer for EnkelDataRegistrerer<W
     }
 }
 
-fn variabel_sammendrag<W: Write + std::os::fd::AsFd>(stdout: &mut raw::RawTerminal<W>, vnavn: String, data: &Vec<f64>) {
+fn variabel_sammendrag<W: Write + std::os::fd::AsFd>(
+    stdout: &mut raw::RawTerminal<W>,
+    vnavn: String,
+    data: &Vec<f64>,
+) {
     let (avg, dev) = variabel_sammendrag_stat(data);
     variabel_sammendrag_print(stdout, vnavn, avg, dev);
 }

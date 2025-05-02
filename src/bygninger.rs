@@ -1,5 +1,5 @@
 use crate::heis_driver::{HeisDriver, HeisDriver1, HeisDriver2, HeisDriver3};
-use crate::motor_kontroller::{MotorKontroller, nyMotorKontroller1, nyMotorKontroller2, nyMotorKontroller3};
+use crate::motor_kontroller::{MotorKontroller, ny_motor_kontroller1, ny_motor_kontroller2, ny_motor_kontroller3};
 
 pub trait Bygning {
     fn hent_heis_driver(&self) -> Box<dyn HeisDriver>;
@@ -20,15 +20,15 @@ pub fn deserialize(n: f64) -> Box<dyn Bygning> {
     }
 }
 
-pub fn hent_heis_etasje(etasjeHoyde: Vec<f64>, hoyde: f64) -> u64 {
+pub fn hent_heis_etasje(etasje_hoyde: Vec<f64>, hoyde: f64) -> u64 {
     let mut c = 0.0;
-    for (ei, eh) in etasjeHoyde.iter().enumerate() {
+    for (ei, eh) in etasje_hoyde.iter().enumerate() {
         c += eh;
         if hoyde <= c {
             return ei as u64
         }
     }
-    (etasjeHoyde.len() -1) as u64
+    (etasje_hoyde.len() -1) as u64
 }
 
 pub fn hent_kumulativ_etasje_hoyde(hoyde: Vec<f64>, etasje: u64) -> f64 {
@@ -43,7 +43,7 @@ impl Bygning for Bygning1  {
     }
 
     fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
-        nyMotorKontroller1()
+        ny_motor_kontroller1()
     }
 
     fn hent_etasje_hoyde(&self) -> Vec<f64> {
@@ -71,7 +71,7 @@ impl Bygning for Bygning2 {
     }
 
     fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
-        nyMotorKontroller2()
+        ny_motor_kontroller2()
     }
 
     fn hent_etasje_hoyde(&self) -> Vec<f64> {
@@ -99,7 +99,7 @@ impl Bygning for Bygning3 {
     }
 
     fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller> {
-        nyMotorKontroller3()
+        ny_motor_kontroller3()
     }
 
     fn hent_etasje_hoyde(&self) -> Vec<f64> {

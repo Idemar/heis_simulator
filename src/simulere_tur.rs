@@ -3,7 +3,7 @@ extern crate heis_simulator;
 
 use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, JevnBevegelseKontroller};
 use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3};
-use heis_simulator::data_registreringer::{DataRegistreringer, nyEnkelDataRegistrerer};
+use heis_simulator::data_registreringer::{DataRegistreringer, ny_enkel_data_registrerer};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
 use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
@@ -108,7 +108,7 @@ pub fn kjør_simulering() {
         }
     }
 
-    let mut dr: Box<dyn DataRegistreringer> = nyEnkelDataRegistrerer(esp.clone());
+    let mut dr: Box<dyn DataRegistreringer> = ny_enkel_data_registrerer(esp.clone());
     let mut mc: Box<dyn BevegelseKontroller> = Box::new(JevnBevegelseKontroller {
         timestamp: 0.0,
         esp: esp.clone(),

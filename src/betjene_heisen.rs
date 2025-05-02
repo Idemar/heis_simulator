@@ -2,7 +2,7 @@ extern crate floating_duration;
 extern crate heis_simulator;
 
 use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, JevnBevegelseKontroller};
-use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hentKumulativEtasjeHoyde};
+use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hent_kumulativ_etasje_hoyde};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
 use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
@@ -139,7 +139,7 @@ pub fn kjør_operatør() {
             };
 
             // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-            if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01
+            if (est.lokasjon - hent_kumulativ_etasje_hoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01
                 && est.hastighet.abs() < 0.01
             {
                 est.hastighet = 0.0;

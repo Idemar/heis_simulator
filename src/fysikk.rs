@@ -1,5 +1,5 @@
 use crate::bevegelse_kontroller::{BevegelseKontroller};
-use crate::bygninger::{Bygning, hentKumulativEtasjeHoyde};
+use crate::bygninger::{Bygning, hent_kumulativ_etasje_hoyde};
 use crate::data_registreringer::{DataRegistreringer};
 use floating_duration::{TimeAsFloat, TimeFormat};
 use std::time::Instant;
@@ -51,7 +51,7 @@ pub fn simulere_heis(esp: Box<dyn Bygning>, est: HeisStat, etasje_foresporsel: &
         };
 
         // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-        if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01 && est.hastighet.abs() < 0.01 {
+        if (est.lokasjon - hent_kumulativ_etasje_hoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01 && est.hastighet.abs() < 0.01 {
             est.hastighet = 0.0;
             neste_etasje = etasje_foresporsel.pop_foresporsel();
         }

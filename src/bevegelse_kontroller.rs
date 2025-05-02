@@ -1,4 +1,4 @@
-use crate::bygninger::{Bygning, hentKumulativEtasjeHoyde};
+use crate::bygninger::{Bygning, hent_kumulativ_etasje_hoyde};
 use crate::fysikk::{HeisStat, MAX_AKSELERASJON, MAX_HASTIGHET, MAX_RYKK};
 
 pub trait BevegelseKontroller {
@@ -38,7 +38,7 @@ impl BevegelseKontroller for JevnBevegelseKontroller {
 
         let d = est.hastighet.abs() * brems_t;
 
-        let dst_hoyde = hentKumulativEtasjeHoyde(self.esp.hent_etasje_hoyde(), dst);
+        let dst_hoyde = hent_kumulativ_etasje_hoyde(self.esp.hent_etasje_hoyde(), dst);
 
         // l = avstand til neste etasje
         let l = (est.lokasjon - dst_hoyde).abs();
