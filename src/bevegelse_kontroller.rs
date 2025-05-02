@@ -2,7 +2,7 @@ use crate::bygninger::{Bygning, hentKumulativEtasjeHoyde};
 use crate::fysikk::{HeisStat, MAX_AKSELERASJON, MAX_HASTIGHET, MAX_RYKK};
 
 pub trait BevegelseKontroller {
-    fn init(&mut self, esp: Box<Bygning>, est: HeisStat);
+    fn init(&mut self, esp: Box<dyn Bygning>, est: HeisStat);
     fn juster(&mut self, est: &HeisStat, dst: u64) -> f64;
 }
 
@@ -12,7 +12,7 @@ pub struct JevnBevegelseKontroller {
 }
 
 impl BevegelseKontroller for JevnBevegelseKontroller {
-    fn init(&mut self, esp: Box<Bygning>, est: HeisStat) {
+    fn init(&mut self, esp: Box<dyn Bygning>, est: HeisStat) {
         self.esp = esp;
         self.timestamp = est.timestamp;
     }
@@ -28,7 +28,7 @@ impl BevegelseKontroller for JevnBevegelseKontroller {
         let brems_t = if (est.hastighet > 0.0) == (est.akselerasjon > 0.0) {
             // Denne saken overvurderer bevisst "d" for å forhindre "rygging"
             (est.akselerasjon.abs() / MAX_RYKK)
-                + (est.hastighet.abs() / (MAX_AKSELERASJON / 2))
+                + (est.hastighet.abs() / (MAX_AKSELERASJON / 2.0))
                 + 2.0 * (MAX_AKSELERASJON / MAX_RYKK)
         } else {
             // uten MAX_RUKK nærmer dette seg uendelig og bremser ned altfor tidlig

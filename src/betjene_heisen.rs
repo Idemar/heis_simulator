@@ -1,10 +1,10 @@
 extern crate floating_duration;
 extern crate heis_simulator;
 
-use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, jevnBevegelseKontroller};
+use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, JevnBevegelseKontroller};
 use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hentKumulativEtasjeHoyde};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
-use heis_simulator::turplanlegging::{EtasjeForesporseler, ForesporselKo};
+use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
 use floating_duration::{TimeAsFloat, TimeFormat};
 use std::cmp;
@@ -14,7 +14,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, Read, Write};
 use std::time::Instant;
-use std::{threads, time};
+use std::{thread, time};
 
 pub fn kjør_operatør() {
     // Lagre plassering, hastighet og akselerasjonstilstand
@@ -28,14 +28,14 @@ pub fn kjør_operatør() {
     };
 
     // Lagre inndata bygningsbeskrivelse og etasjeforespørsler
-    let mut esp: Box<Bygning> = Box::new(Bygning1);
-    let mut etasjeforesporsler: Box<ForesporselKo> = Box::new(EtasjeForesporseler {
-        foresporseler: VecDeque::new(),
+    let mut esp: Box<dyn Bygning> = Box::new(Bygning1);
+    let mut etasjeforesporsler: Box<dyn ForesporselsKo> = Box::new(EtasjeForesporsel {
+        foresporsel: VecDeque::new(),
     });
 
     // Analyser inndata og lagre som bygningsbeskrivelse og etasjeforespørsler
     match env::args().nth(1) {
-        Some(ref fp) if *fp == "-".to_sting() => {
+        Some(ref fp) if *fp == "-".to_string() => {
             let mut buffer = String::new();
             io::stdin()
                 .read_to_string(&mut buffer)
@@ -109,7 +109,7 @@ pub fn kjør_operatør() {
         }
     }
 
-    let mut mc: Box<BevegelseKontroller> = Box::new(jevnBevegelseKontroller {
+    let mut mc: Box<dyn BevegelseKontroller> = Box::new(JevnBevegelseKontroller {
         timestamp: 0.0,
         esp: esp.clone(),
     });
@@ -120,7 +120,7 @@ pub fn kjør_operatør() {
     // Loop mens det er gjenværende etasjeforespørsler
     let original_ts = Instant::now();
     thread::sleep(time::Duration::from_millis(1));
-    let mut neste_etasje = etasjeforesporsler.pop_request();
+    let mut neste_etasje = etasjeforesporsler.pop_foresporsel();
 
     while true {
         if let Some(dst) = neste_etasje {
@@ -134,16 +134,16 @@ pub fn kjør_operatør() {
             est.hastighet = est.hastighet + est.akselerasjon * dt;
             est.akselerasjon = {
                 let f = est.motor_input;
-                let m = esp.hent_etasje_vekt();
+                let m = esp.hent_heis_vekt();
                 -9.8 + f / m
             };
 
             // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-            if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_vekt(), dst)).abs() < 0.01
+            if (est.lokasjon - hentKumulativEtasjeHoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01
                 && est.hastighet.abs() < 0.01
             {
                 est.hastighet = 0.0;
-                neste_etasje = etasjeforesporsler.pop_request();
+                neste_etasje = etasjeforesporsler.pop_foresporsel();
             }
 
             // Juster motorkontrollen for å behandle forespørsel om neste etasje
@@ -155,11 +155,11 @@ pub fn kjør_operatør() {
             thread::sleep(time::Duration::from_millis(1));
         } else {
             // Juster motoren slik at den ikke beveger seg
-            esp.hent_motor_kontroller.juster_motor(0.0);
+            esp.hent_motor_kontroller().juster_motor(0.0);
         }
 
         // sjekk for dynamiske etasjeforespørsler
-        if let Some(dst) = esp.hent_heis_driver().poll_etasje_foresporsle() {
+        if let Some(dst) = esp.hent_heis_driver().etasje_foresporsel() {
             etasjeforesporsler.legg_til_foresporsel(dst);
         }
     }

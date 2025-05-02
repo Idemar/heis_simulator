@@ -9,10 +9,10 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufRead, BufReader, Read, Write};
-use std::time::Instat;
+use std::time::Instant;
 
 use heis_simulator::bygninger;
-use heis_simulator::bygninger::{Bygning, hentKumultivEtasjeHoyde};
+use heis_simulator::bygninger::{Bygning, hentKumulativEtasjeHoyde};
 use heis_simulator::fysikk::HeisStat;
 
 #[derive(Clone)]
@@ -23,16 +23,17 @@ struct Tur {
 }
 
 fn main() {
-    let simlog = File::open(simulering.log).expect("les simuleringsloggen");
+    let simlog = File::open(simulation.log).expect("les simuleringsloggen");
     let mut simlog = BufReader::new(&simlog);
     let rykk = 0.0;
     let mut forrige_est: Option<HeisStat> = None;
+    let mut dst_timing: Vec<Tur> = Vec::new();
     let start_lokasjon = 0.0;
 
     let mut første_linje = String::new();
     let len = simlog.read_line(&mut første_linje).unwrap();
     let spec: u64 = serde_json::from_str(&første_linje).unwrap();
-    let esp: Box<Bygning> = bygninger::deserialize(spec);
+    let esp: Box<dyn Bygning> = bygninger::deserialize(spec as f64);
     for linje in simlog.lines() {
         let l = linje.unwrap();
         let (est, dst): (HeisStat, u64) = serde_json::from_str(&l).unwrap();
@@ -77,7 +78,7 @@ fn main() {
     let mut total_tid = 0.0;
     let mut total_direkte = 0.0;
     for tur in dst_timing.clone() {
-        total_tid += (tur.opp + tur.ned);
+        total_tid += tur.opp + tur.ned;
         if tur.opp > tur.ned {
             total_direkte += tur.opp;
         } else {
@@ -96,13 +97,13 @@ fn main() {
 
     let mut tur_start_lokasjon = start_lokasjon;
     let mut teoretisk_tid = 0.0;
-    let etasje_hoyde = esp.hentEtasjeHoyde();
+    let etasje_hoyde = esp.hent_etasje_hoyde();
     for tur in dst_timing.clone() {
-        let neste_etasje = hentKumultivEtasjeHoyde(etasje_hoyde.clone(), tur.dst);
+        let neste_etasje = hentKumulativEtasjeHoyde(etasje_hoyde.clone(), tur.dst);
         let d = (tur_start_lokasjon - neste_etasje).abs();
-        teoretisk_tid += (2.0 * (MAX_AKSELERASJON / MAX_RYKK)
+        teoretisk_tid += 2.0 * (MAX_AKSELERASJON / MAX_RYKK)
             + 2.0 * (MAX_RYKK / MAX_AKSELERASJON)
-            + d / MAX_HASTIGHET);
+            + d / MAX_HASTIGHET;
 
         tur_start_lokasjon = neste_etasje
     }

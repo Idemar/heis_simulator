@@ -1,17 +1,17 @@
 use libc::c_int;
 
-#[link(navn = "heis1")]
-unsafe extern {
+#[link(name = "heis1")]
+unsafe extern "C" {
     pub fn heis1_etasje_foresporsel() -> c_int;
 }
 
-#[link(navn = "heis2")]
-unsafe extern {
+#[link(name = "heis2")]
+unsafe extern "C" {
     pub fn heis2_etasje_foresporsel() -> c_int;
 }
 
-#[link(navn = "heis3")]
-unsafe extern {
+#[link(name = "heis3")]
+unsafe extern "C" {
     pub fn heis3_etasje_foresporsel() -> c_int;
 }
 

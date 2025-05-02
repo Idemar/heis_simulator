@@ -6,21 +6,21 @@ pub trait Bygning {
     fn hent_motor_kontroller(&self) -> Box<dyn MotorKontroller>;
     fn hent_etasje_hoyde(&self) -> Vec<f64>;
     fn hent_heis_vekt(&self) -> f64;
-    fn clone(&self) -> Box<Bygning>;
+    fn clone(&self) -> Box<dyn Bygning>;
     fn serialize(&self) -> u64;
 }
 
-pub fn deserialize(n: f64) -> Box<Bygning> {
-    if n == 1 {
+pub fn deserialize(n: f64) -> Box<dyn Bygning> {
+    if n == 1.0 {
         Box::new(Bygning1)
-    } else if n == 2 {
+    } else if n == 2.0 {
         Box::new(Bygning2)
     } else {
         Box::new(Bygning3)
     }
 }
 
-pub fn hentHeisEtasje(etasjeHoyde: Vec<f64>, hoyde: u64) -> f64 {
+pub fn hent_heis_etasje(etasjeHoyde: Vec<f64>, hoyde: f64) -> u64 {
     let mut c = 0.0;
     for (ei, eh) in etasjeHoyde.iter().enumerate() {
         c += eh;
@@ -31,13 +31,13 @@ pub fn hentHeisEtasje(etasjeHoyde: Vec<f64>, hoyde: u64) -> f64 {
     (etasjeHoyde.len() -1) as u64
 }
 
-pub fn hentKumulativEtasjeHoyde(hoyde: Vec<f64>, etasje: u64) -> f64 {
+pub fn hent_kumulativ_etasje_hoyde(hoyde: Vec<f64>, etasje: u64) -> f64 {
     hoyde.iter().take(etasje as usize).sum()
 }
 
 pub struct Bygning1;
 
-impl Bygning for Bygning1 {
+impl Bygning for Bygning1  {
     fn hent_heis_driver(&self) -> Box<dyn HeisDriver> {
         Box::new(HeisDriver1)
     }
@@ -54,7 +54,7 @@ impl Bygning for Bygning1 {
         1200.0
     }
 
-    fn clone(&self) -> Box<Bygning> {
+    fn clone(&self) -> Box<dyn Bygning> {
         Box::new(Bygning1)
     }
 
@@ -82,7 +82,7 @@ impl Bygning for Bygning2 {
         1350.0
     }
 
-    fn clone(&self) -> Box<Bygning> {
+    fn clone(&self) -> Box<dyn Bygning> {
         Box::new(Bygning2)
     }
 
@@ -109,7 +109,7 @@ impl Bygning for Bygning3 {
     fn hent_heis_vekt(&self) -> f64 {
         1500.0
     }
-    fn clone(&self) -> Box<Bygning> {
+    fn clone(&self) -> Box<dyn Bygning> {
         Box::new(Bygning3)
     }
     fn serialize(&self) -> u64 {

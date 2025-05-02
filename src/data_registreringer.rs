@@ -12,12 +12,12 @@ use termion::raw::IntoRawMode;
 use termion::{clear, cursor, style};
 
 pub trait DataRegistreringer {
-    fn init(&mut self, esp: Box<Bygning>, est: HeisStat);
+    fn init(&mut self, esp: Box<dyn Bygning>, est: HeisStat);
     fn registrerer(&mut self, est: HeisStat, dst: u64);
     fn sammendrag(&mut self);
 }
 
-struct enkelDataRegistrerer<W: Write> {
+struct EnkelDataRegistrerer<W: Write + std::os::fd::AsFd> {
     esp: Box<dyn Bygning>,
     termbredde: u64,
     termhoyde: u64,
@@ -26,12 +26,12 @@ struct enkelDataRegistrerer<W: Write> {
     registrer_lokasjon: Vec<f64>,
     registrer_hastighet: Vec<f64>,
     registrer_akselerasjon: Vec<f64>,
-    registrer_styrke: Vec<u64>,
+    registrer_styrke: Vec<f64>,
 }
 
-pub fn nyEnkelDataRegistrerer(esp: Box<Bygning>) -> Box<DataRegistreringer> {
+pub fn ny_enkel_data_registrerer(esp: Box<dyn Bygning>) -> Box<dyn DataRegistreringer> {
     let termsize = termion::terminal_size().ok();
-    Box::new(enkelDataRegistrerer {
+    Box::new(EnkelDataRegistrerer {
         esp: esp.clone(),
         termbredde: termsize.map(|(w, _)| w - 2).expect("termbredde") as u64,
         termhoyde: termsize.map(|(h, _)| h - 2).expect("termhøyde") as u64,
@@ -44,8 +44,8 @@ pub fn nyEnkelDataRegistrerer(esp: Box<Bygning>) -> Box<DataRegistreringer> {
     })
 }
 
-impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
-    fn init(&mut self, esp: Box<Bygning>, est: HeisStat) {
+impl<W: Write + std::os::fd::AsFd> DataRegistreringer for EnkelDataRegistrerer<W> {
+    fn init(&mut self, esp: Box<dyn Bygning>, est: HeisStat) {
         self.esp = esp.clone();
         self.log
             .write_all(serde_json::to_string(&esp.serialize()).unwrap().as_bytes())
@@ -67,8 +67,8 @@ impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
 
         // Skriv ut statistikk i sanntid
         print!("{}{}{}", clear::All, cursor::Goto(1, 1), cursor::Hide);
-        let heis_etasje = hentHeisEtasje(self.esp.hentEtasjeHoyde(), est.lokasjon);
-        let etasje_teller = self.esp.hentEtasjeHoyde().len() as u64;
+        let heis_etasje = hentHeisEtasje(self.esp.hent_etasje_hoyde(), est.lokasjon);
+        let etasje_teller = self.esp.hent_etasje_hoyde().len() as u64;
         let mut terminal_buffer = vec![' ' as u8; (self.termbredde * self.termhoyde) as usize];
 
         for ty in 0..etasje_teller {
@@ -81,7 +81,7 @@ impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
                 };
             terminal_buffer[(ty * self.termbredde + 2) as usize] = ']' as u8;
             terminal_buffer[(ty * self.termbredde + self.termbredde - 2) as usize] = '\r' as u8;
-            terminal_buffer[(ty * self.termbredde + self.termbrerdde - 1) as usize] = '\n' as u8;
+            terminal_buffer[(ty * self.termbredde + self.termbredde - 1) as usize] = '\n' as u8;
         }
 
         let stat = vec![
@@ -128,7 +128,7 @@ impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
         );
         variabel_sammendrag(
             &mut self.stdout,
-            "akselerasjon".to_stirng(),
+            "akselerasjon".to_string(),
             &self.registrer_akselerasjon,
         );
         variabel_sammendrag(
@@ -142,7 +142,7 @@ impl<W: Write> DataRegistreringer for enkelDataRegistrerer<W> {
 
 fn variabel_sammendrag<W: Write + std::os::fd::AsFd>(stdout: &mut raw::RawTerminal<W>, vnavn: String, data: &Vec<f64>) {
     let (avg, dev) = variabel_sammendrag_stat(data);
-    variabel_sammendrag_print(stdout, vnavn, dev);
+    variabel_sammendrag_print(stdout, vnavn, avg, dev);
 }
 
 fn variabel_sammendrag_stat(data: &Vec<f64>) -> (f64, f64) {

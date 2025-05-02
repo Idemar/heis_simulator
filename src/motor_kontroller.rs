@@ -3,17 +3,17 @@ use libc::c_double;
 use crate::bygninger::Bygning;
 use crate::fysikk::HeisStat;
 
-#[link(navn = "motor1")]
+#[link(name = "motor1")]
 unsafe extern "C" {
     pub fn motor1_juster_motor(target_styrke: c_double) -> c_double;
 }
 
-#[link(navn = "motor2")]
+#[link(name = "motor2")]
 unsafe extern "C" {
     pub fn motor2_juster_motor(target_styrke: c_double) -> c_double;
 }
 
-#[link(navn = "motor3")]
+#[link(name = "motor3")]
 unsafe extern "C" {
     pub fn motor3_juster_motor(target_styrke: c_double) -> c_double;
 }
@@ -33,7 +33,7 @@ struct Motor1;
 impl MotorDriver for Motor1 {
     fn juster_motor(&self, input: MotorInput) {
         if let MotorInput::Motor1 {
-            target_styrke: target_styrke,
+            target_styrke,
         } = input
         {
             unsafe {
@@ -47,7 +47,7 @@ struct Motor2;
 impl MotorDriver for Motor2 {
     fn juster_motor(&self, input: MotorInput) {
         if let MotorInput::Motor2 {
-            target_styrke: target_styrke,
+            target_styrke,
         } = input
         {
             unsafe {
@@ -61,7 +61,7 @@ struct Motor3;
 impl MotorDriver for Motor3 {
     fn juster_motor(&self, input: MotorInput) {
         if let MotorInput::Motor3 {
-            target_styrke: target_styrke,
+            target_styrke,
         } = input
         {
             unsafe {
@@ -80,7 +80,7 @@ pub struct MotorKontroller1 {
     motor: Motor1,
 }
 
-pub fn nyMotorKontroller1() -> Box<dyn MotorKontroller> {
+pub fn ny_motor_kontroller1() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller1 { motor: Motor1 })
 }
 
@@ -98,7 +98,7 @@ pub struct MotorKontroller2 {
     motor: Motor2,
 }
 
-pub fn nyMotorKontroller2() -> Box<dyn MotorKontroller> {
+pub fn ny_motor_kontroller2() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller2 { motor: Motor2 })
 }
 
@@ -116,7 +116,7 @@ pub struct MotorKontroller3 {
     motor: Motor3,
 }
 
-pub fn nyMotorKontroller3() -> Box<dyn MotorKontroller> {
+pub fn ny_motor_kontroller3() -> Box<dyn MotorKontroller> {
     Box::new(MotorKontroller3 { motor: Motor3 })
 }
 

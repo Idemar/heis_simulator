@@ -1,11 +1,11 @@
 extern crate floating_duration;
 extern crate heis_simulator;
 
-use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, jevnBevegelseKontroller};
+use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, JevnBevegelseKontroller};
 use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3};
-use heis_simulator::data_registreringer::{DataRegistreringer, enkelDataRegistrerer};
+use heis_simulator::data_registreringer::{DataRegistreringer, nyEnkelDataRegistrerer};
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
-use heis_simulator::tur_planlegging::{EtasjeForesporsel, ForesporselKo};
+use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
 use std::cmp;
 use std::collections::VecDeque;
@@ -18,7 +18,7 @@ use std::time::Instant;
 pub fn kjør_simulering() {
     //Lagre plassering, hastighet og akselerasjonstilstand
     //Lagre motorens inndatasmålkraft
-    let mut est = HeisStat {
+    let est = HeisStat {
         timestamp: 0.0,
         lokasjon: 0.0,
         hastighet: 0.0,
@@ -27,8 +27,8 @@ pub fn kjør_simulering() {
     };
 
     // Lagre inndata bygningsbeskrivelse og etasjeforespørsler
-    let mut esp: Box<Bygning> = Box::new(Bygning1);
-    let mut etasjeforesporsler: Box<ForesporselKo> = Box::new(EtasjeForesporsel {
+    let mut esp: Box<dyn Bygning> = Box::new(Bygning1);
+    let mut etasjeforesporsler: Box<dyn ForesporselsKo> = Box::new(EtasjeForesporsel {
         foresporsel: VecDeque::new(),
     });
 
@@ -38,12 +38,12 @@ pub fn kjør_simulering() {
             let mut buffer = String::new();
             io::stdin()
                 .read_to_string(&mut buffer)
-                .except("read_to_string feilet");
+                .expect("read_to_string feilet");
 
             for (li, l) in buffer.lines().enumerate() {
                 if li == 0 {
                     let bygning = l.parse::<u64>().unwrap();
-                    if bygning = 0 {
+                    if bygning == 0 {
                         esp = Box::new(Bygning1);
                     } else if bygning == 1 {
                         esp = Box::new(Bygning2);
@@ -61,14 +61,14 @@ pub fn kjør_simulering() {
             let fp = "test.txt";
             let mut buffer = String::new();
             File::open(fp)
-                .except("File::open feilet")
+                .expect("File::open feilet")
                 .read_to_string(&mut buffer)
-                .except("read_to_string feilet");
+                .expect("read_to_string feilet");
 
             for (li, l) in buffer.lines().enumerate() {
                 if li == 0 {
                     let bygning = l.parse::<u64>().unwrap();
-                    if bygning = 0 {
+                    if bygning == 0 {
                         esp = Box::new(Bygning1);
                     } else if bygning == 1 {
                         esp = Box::new(Bygning2);
@@ -85,9 +85,9 @@ pub fn kjør_simulering() {
         Some(fp) => {
             let mut buffer = String::new();
             File::open(fp)
-                .except("File::open feilet")
+                .expect("File::open feilet")
                 .read_to_string(&mut buffer)
-                .except("read_to_string feilet");
+                .expect("read_to_string feilet");
 
             for (li, l) in buffer.lines().enumerate() {
                 if li == 0 {
@@ -102,20 +102,20 @@ pub fn kjør_simulering() {
                         panic!("Ukjent bygningskode: {}", bygning);
                     }
                 } else {
-                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>(), unwrap());
+                    etasjeforesporsler.legg_til_foresporsel(l.parse::<u64>().unwrap());
                 }
             }
         }
     }
 
-    let mut dr: Box<DataRegistreringer> = nyEnkelDataRegistrer(esp.clone());
-    let mut mc: Box<BevegelseKontroller> = Box::new(jevnBevegelseKontroller {
+    let mut dr: Box<dyn DataRegistreringer> = nyEnkelDataRegistrerer(esp.clone());
+    let mut mc: Box<dyn BevegelseKontroller> = Box::new(JevnBevegelseKontroller {
         timestamp: 0.0,
         esp: esp.clone(),
     });
 
     simulere_heis(esp, est, &mut etasjeforesporsler, &mut mc, &mut dr);
-    dr.summary();
+    dr.sammendrag();
 }
 
 fn main() {
