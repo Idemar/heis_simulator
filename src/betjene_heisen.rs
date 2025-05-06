@@ -2,17 +2,17 @@ extern crate floating_duration;
 extern crate heis_simulator;
 
 use heis_simulator::bevegelse_kontroller::{BevegelseKontroller, JevnBevegelseKontroller};
-use heis_simulator::bygninger::{Bygning, Bygning1, Bygning2, Bygning3, hent_kumulativ_etasje_hoyde};
-use heis_simulator::fysikk::{HeisStat, simulere_heis};
+use heis_simulator::bygninger::{
+    Bygning, Bygning1, Bygning2, Bygning3, hent_kumulativ_etasje_hoyde,
+};
+use heis_simulator::fysikk::HeisStat;
 use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
-use floating_duration::{TimeAsFloat, TimeFormat};
-use std::cmp;
+use floating_duration::TimeAsFloat;
 use std::collections::VecDeque;
 use std::env;
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, Read, Write};
+use std::io::{self, Read};
 use std::time::Instant;
 use std::{thread, time};
 
@@ -122,7 +122,7 @@ pub fn kjør_operatør() {
     thread::sleep(time::Duration::from_millis(1));
     let mut neste_etasje = etasjeforesporsler.pop_foresporsel();
 
-    while true {
+    loop {
         if let Some(dst) = neste_etasje {
             // oppdater lokasjon, hastighet og akselerasjon
             let now = Instant::now();
@@ -130,8 +130,8 @@ pub fn kjør_operatør() {
             let dt = ts - est.timestamp;
             est.timestamp = ts;
 
-            est.lokasjon = est.lokasjon + est.hastighet * dt;
-            est.hastighet = est.hastighet + est.akselerasjon * dt;
+            est.lokasjon += est.hastighet * dt;
+            est.hastighet += est.akselerasjon * dt;
             est.akselerasjon = {
                 let f = est.motor_input;
                 let m = esp.hent_heis_vekt();
@@ -139,7 +139,8 @@ pub fn kjør_operatør() {
             };
 
             // Hvis forespørselen om neste etasje i køen er oppfylt, fjern den fra køen
-            if (est.lokasjon - hent_kumulativ_etasje_hoyde(esp.hent_etasje_hoyde(), dst)).abs() < 0.01
+            if (est.lokasjon - hent_kumulativ_etasje_hoyde(esp.hent_etasje_hoyde(), dst)).abs()
+                < 0.01
                 && est.hastighet.abs() < 0.01
             {
                 est.hastighet = 0.0;

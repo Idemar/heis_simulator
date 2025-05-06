@@ -1,15 +1,11 @@
 extern crate heis_simulator;
 
-#[macro_use]
-extern crate serde_derive;
 extern crate floating_duration;
 extern crate serde;
+extern crate serde_derive;
 extern crate serde_json;
-use std::env;
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, BufRead, BufReader, Read, Write};
-use std::time::Instant;
+use std::io::{BufRead, BufReader};
 
 use heis_simulator::bygninger;
 use heis_simulator::bygninger::{Bygning, hent_kumulativ_etasje_hoyde};
@@ -23,12 +19,12 @@ struct Tur {
 }
 
 fn main() {
-    let simlog = File::open(simulation.log).expect("les simuleringsloggen");
+    let simlog = File::open("simulation.log").expect("les simuleringsloggen");
     let mut simlog = BufReader::new(&simlog);
-    let rykk = 0.0;
+    let mut rykk = 0.0;
     let mut forrige_est: Option<HeisStat> = None;
     let mut dst_timing: Vec<Tur> = Vec::new();
-    let start_lokasjon = 0.0;
+    let mut start_lokasjon = 0.0;
 
     let mut første_linje = String::new();
     let len = simlog.read_line(&mut første_linje).unwrap();

@@ -2,14 +2,11 @@ use crate::bygninger::{Bygning, hent_heis_etasje};
 use crate::fysikk::HeisStat;
 use serde_json;
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, Read, Write};
+use std::io::{self, Write};
 use termion;
-use termion::event::Key;
-use termion::input::TermRead;
 use termion::raw;
 use termion::raw::IntoRawMode;
-use termion::{clear, cursor, style};
+use termion::{clear, cursor};
 
 pub trait DataRegistreringer {
     fn init(&mut self, esp: Box<dyn Bygning>, est: HeisStat);

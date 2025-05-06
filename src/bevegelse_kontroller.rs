@@ -21,8 +21,8 @@ impl BevegelseKontroller for JevnBevegelseKontroller {
         // Juster motorkontrollen for å behandle forespørsel om neste etasje
 
         // det vil ta "t" sekunder å nå maks fra maks
-        let t_akselerasjon = MAX_AKSELERASJON / MAX_RYKK;
-        let t_hastighet = MAX_HASTIGHET / MAX_AKSELERASJON;
+        let _t_akselerasjon = MAX_AKSELERASJON / MAX_RYKK;
+        let _t_hastighet = MAX_HASTIGHET / MAX_AKSELERASJON;
 
         // det kan ta opptil "d" meter å bremse ned fra nåværende
         let brems_t = if (est.hastighet > 0.0) == (est.akselerasjon > 0.0) {

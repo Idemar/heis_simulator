@@ -7,13 +7,10 @@ use heis_simulator::data_registreringer::{DataRegistreringer, ny_enkel_data_regi
 use heis_simulator::fysikk::{HeisStat, simulere_heis};
 use heis_simulator::turplanlegging::{EtasjeForesporsel, ForesporselsKo};
 
-use std::cmp;
 use std::collections::VecDeque;
 use std::env;
 use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, Read, Write};
-use std::time::Instant;
+use std::io::{self, Read};
 
 pub fn kjør_simulering() {
     //Lagre plassering, hastighet og akselerasjonstilstand

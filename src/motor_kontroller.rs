@@ -32,10 +32,7 @@ pub trait MotorDriver {
 struct Motor1;
 impl MotorDriver for Motor1 {
     fn juster_motor(&self, input: MotorInput) {
-        if let MotorInput::Motor1 {
-            target_styrke,
-        } = input
-        {
+        if let MotorInput::Motor1 { target_styrke } = input {
             unsafe {
                 motor1_juster_motor(target_styrke);
             }
@@ -46,10 +43,7 @@ impl MotorDriver for Motor1 {
 struct Motor2;
 impl MotorDriver for Motor2 {
     fn juster_motor(&self, input: MotorInput) {
-        if let MotorInput::Motor2 {
-            target_styrke,
-        } = input
-        {
+        if let MotorInput::Motor2 { target_styrke } = input {
             unsafe {
                 motor2_juster_motor(target_styrke);
             }
@@ -60,10 +54,7 @@ impl MotorDriver for Motor2 {
 struct Motor3;
 impl MotorDriver for Motor3 {
     fn juster_motor(&self, input: MotorInput) {
-        if let MotorInput::Motor3 {
-            target_styrke,
-        } = input
-        {
+        if let MotorInput::Motor3 { target_styrke } = input {
             unsafe {
                 motor3_juster_motor(target_styrke);
             }
